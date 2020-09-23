@@ -15,19 +15,31 @@ class LoggingInterceptors extends Interceptor {
       options.queryParameters.forEach((k, v) => print('$k: $v'));
     }
 
-    
-    return super.onRequest(options);
+    if (options.data != null) {
+      print("Body: ${options.data}");
+    }
+    print(
+        "--> END ${options.method != null ? options.method.toUpperCase() : 'METHOD'}");
+
+    return options;
   }
 
   @override
-  Future onError(DioError err) {
-    // TODO: implement onError
-    return super.onError(err);
+  Future<FutureOr> onError(DioError dioError) async {
+    print(
+        "<-- ${dioError.message} ${(dioError.response?.request != null ? (dioError.response.request.baseUrl + dioError.response.request.path) : 'URL')}");
+    print(
+        "${dioError.response != null ? dioError.response.data : 'Unknown Error'}");
+    print("<-- End error");
   }
 
   @override
-  Future onResponse(Response response) {
-    // TODO: implement onResponse
-    return super.onResponse(response);
+  Future<FutureOr> onResponse(Response response) async {
+    print(
+        "<-- ${response.statusCode} ${(response.request != null ? (response.request.baseUrl + response.request.path) : 'URL')}");
+    print("Headers:");
+    response.headers?.forEach((k, v) => print('$k: $v'));
+    print("Response: ${response.data}");
+    print("<-- END HTTP");
   }
 }
